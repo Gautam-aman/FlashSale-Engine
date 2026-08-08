@@ -7,6 +7,7 @@ import com.aman.bookingservice.dto.CreateReservationRequest;
 import com.aman.bookingservice.dto.ReservationResponse;
 import com.aman.bookingservice.entity.Reservation;
 import com.aman.bookingservice.entity.TicketType;
+import com.aman.bookingservice.exception.InsufficientInventoryException;
 import com.aman.bookingservice.repository.ReservationRepository;
 import com.aman.bookingservice.repository.TicketTypeRepository;
 import jakarta.transaction.Transactional;
@@ -22,6 +23,14 @@ public class ReservationService {
 
 	@Transactional
 	public ReservationResponse createReservation(CreateReservationRequest request){
+
+
+		int updatedRows = ticketTypeRepository.reserveInventory(request.ticketTypeId(), request.quantity());
+
+		if (updatedRows == 0) {throw new InsufficientInventoryException(
+					"Not enough tickets available"
+			);
+		}
 
 		TicketType ticketType = ticketTypeRepository.findById(request.ticketTypeId())
 				.orElseThrow(() -> new IllegalArgumentException("Ticket Type Not Found"));

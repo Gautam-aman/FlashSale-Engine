@@ -63,6 +63,6 @@ public class Reservation {
 	@Column(nullable = false)
 	private LocalDateTime expiresAt;
 
-	public Reservation(@NotBlank String s, TicketType ticketType, @NotNull @Min(1) Integer quantity, LocalDateTime expiresAt) {
+	public Reservation(@NotBlank String s, TicketType ticketType, @NotNull @Min(1) Integer quantity, java.time.LocalDateTime expiresAt) {
 	}
 }
