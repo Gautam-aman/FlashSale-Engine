@@ -20,40 +20,41 @@ import org.springframework.stereotype.Service;
 public class ReservationService {
 	private final TicketTypeRepository ticketTypeRepository;
 	private final ReservationRepository reservationRepository;
+	private final RedisInventoryService redisInventoryService;
 
 	@Transactional
 	public ReservationResponse createReservation(CreateReservationRequest request){
 
+		boolean reserved = redisInventoryService.reserveInventory(request.ticketTypeId(), request.quantity());
 
-		int updatedRows = ticketTypeRepository.reserveInventory(request.ticketTypeId(), request.quantity());
-
-		if (updatedRows == 0) {throw new InsufficientInventoryException(
-					"Not enough tickets available"
-			);
+		if (!reserved) {
+			throw new InsufficientInventoryException("Not enough tickets available");
 		}
 
-		TicketType ticketType = ticketTypeRepository.findById(request.ticketTypeId())
-				.orElseThrow(() -> new IllegalArgumentException("Ticket Type Not Found"));
+		try{
+			TicketType ticketType = ticketTypeRepository.findById(request.ticketTypeId())
+					.orElseThrow(() -> new IllegalArgumentException("Ticket type not found"));
 
-		ticketType.decreaseInventory(request.quantity());
-		LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(10);
-		Reservation reservation = new Reservation(
-				request.userId(),
-				ticketType,
-				request.quantity(),
-				expiresAt
-		);
+			LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(10);
 
-		reservationRepository.save(reservation);
-		return new ReservationResponse(
-				reservation.getReservationId(),
-				reservation.getUserId(),
-				ticketType.getId(),
-				reservation.getQuantity(),
-				reservation.getStatus(),
-				reservation.getCreatedAt(),
-				reservation.getExpiresAt()
-		);
+			Reservation reservation = new Reservation(request.userId(), ticketType, request.quantity(), expiresAt);
+			reservationRepository.save(reservation);
+			return new ReservationResponse(
+					reservation.getReservationId(),
+					reservation.getUserId(),
+					ticketType.getId(),
+					reservation.getQuantity(),
+					reservation.getStatus(),
+					reservation.getCreatedAt(),
+					reservation.getExpiresAt()
+			);
+
+		}
+		catch(Exception e){
+			redisInventoryService.releaseInventory(request.ticketTypeId(), request.quantity());
+			throw e;
+		}
+
 
 	}
 
