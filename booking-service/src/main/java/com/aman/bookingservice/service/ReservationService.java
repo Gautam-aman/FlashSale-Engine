@@ -12,6 +12,8 @@ import com.aman.bookingservice.repository.ReservationRepository;
 import com.aman.bookingservice.repository.TicketTypeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Service;
 
@@ -21,9 +23,20 @@ public class ReservationService {
 	private final TicketTypeRepository ticketTypeRepository;
 	private final ReservationRepository reservationRepository;
 	private final RedisInventoryService redisInventoryService;
+	private static final Logger log = LoggerFactory.getLogger(ReservationService.class);
 
 	@Transactional
 	public ReservationResponse createReservation(CreateReservationRequest request){
+
+		log.info(
+				"Attempting reservation: userId={}, ticketTypeId={}, quantity={}",
+				request.userId(),
+				request.ticketTypeId(),
+				request.quantity()
+		);
+
+		TicketType ticketType = ticketTypeRepository.findById(request.ticketTypeId())
+				.orElseThrow(() -> new IllegalArgumentException("Ticket type not found"));
 
 		boolean reserved = redisInventoryService.reserveInventory(request.ticketTypeId(), request.quantity());
 
@@ -31,14 +44,28 @@ public class ReservationService {
 			throw new InsufficientInventoryException("Not enough tickets available");
 		}
 
+
+
 		try{
-			TicketType ticketType = ticketTypeRepository.findById(request.ticketTypeId())
-					.orElseThrow(() -> new IllegalArgumentException("Ticket type not found"));
+
+
+			log.info(
+					"Inventory reserved in Redis: ticketTypeId={}, quantity={}",
+					ticketType.getId(),
+					request.quantity()
+			);
 
 			LocalDateTime expiresAt = LocalDateTime.now().plusMinutes(10);
 
 			Reservation reservation = new Reservation(request.userId(), ticketType, request.quantity(), expiresAt);
 			reservationRepository.save(reservation);
+
+			log.info(
+					"Reservation created: reservationId={}, userId={}",
+					reservation.getReservationId(),
+					request.userId()
+			);
+
 			return new ReservationResponse(
 					reservation.getReservationId(),
 					reservation.getUserId(),
@@ -52,6 +79,12 @@ public class ReservationService {
 		}
 		catch(Exception e){
 			redisInventoryService.releaseInventory(request.ticketTypeId(), request.quantity());
+			log.error(
+					"Failed to persist reservation, compensating Redis inventory: ticketTypeId={}, quantity={}",
+					ticketType.getId(),
+					request.quantity(),
+					e
+			);
 			throw e;
 		}
 
