@@ -54,4 +54,6 @@ public class OutboxEvent {
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
 
+	public OutboxEvent(UUID uuid, String reservationCreated, String string, String payload) {
+	}
 }
