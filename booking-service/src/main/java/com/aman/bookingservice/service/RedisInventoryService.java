@@ -25,7 +25,7 @@ public class RedisInventoryService {
 		return INVENTORY_KEY_PREFIX + ticketTypeId;
 	}
 
-	private long getInventory(Long ticketTypeId) {
+	public long getInventory(Long ticketTypeId) {
 		String key = getInventoryKey(ticketTypeId);
 		String value = redisTemplate.opsForValue().get(key);
 		if (value == null) {return -1;}

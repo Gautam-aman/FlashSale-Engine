@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 public class EventService {
 
 	private final EventRepository eventRepository;
+	private final RedisInventoryService redisInventoryService;
 
 	@Transient
 	public Event createEvent(CreateEventRequest eventRequest) {
@@ -35,7 +36,16 @@ public class EventService {
 			);
 			event.addTicketType(ticketType);
 		}
-		return eventRepository.save(event);
+		Event savedEvent = eventRepository.save(event);
+
+		for (TicketType ticketType : savedEvent.getTicketTypes()) {
+			redisInventoryService.initializeInventory(
+					ticketType.getId(),
+					ticketType.getTotalQuantity()
+			);
+		}
+
+		return savedEvent;
 	}
 
 
