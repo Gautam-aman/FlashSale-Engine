@@ -25,7 +25,7 @@ public class ReservationController {
 	@ResponseStatus(HttpStatus.CREATED)
 	public ReservationResponse createReservation(@Valid @RequestBody CreateReservationRequest request ,
 			@RequestHeader("Idempotency-Key") String idempotencyKey) {
-		return reservationService.createReservation(request);
+		return reservationService.createReservation(idempotencyKey ,request);
 	}
 
 }

@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -37,15 +38,18 @@ public class IdempotencyRecord {
 	@Column(name = "request_hash", nullable = false)
 	private String requestHash;
 
-	@Column(name = "reservation_id")
+	@Getter @Column(name = "reservation_id")
 	private String reservationId;
 
-	@Enumerated(EnumType.STRING)
+	@Getter @Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private IdempotencyStatus status;
 
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
+
+	public IdempotencyRecord(String idempotencyKey, String requestHash) {
+	}
 
 	public void markCompleted(String reservationId) {
 		this.reservationId = reservationId;
@@ -56,4 +60,11 @@ public class IdempotencyRecord {
 		this.status = IdempotencyStatus.FAILED;
 	}
 
+	public Object getRequestHash() {
+		return requestHash;
+	}
+
+	public void markProcessing() {
+		this.status = IdempotencyStatus.PROCESSING;
+	}
 }
