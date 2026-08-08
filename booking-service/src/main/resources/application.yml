@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: booking-service
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/flashsale
+    username: flashsale
+    password: flashsale
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+server:
+  port: 8080
+
+management:
+  endpoint:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
