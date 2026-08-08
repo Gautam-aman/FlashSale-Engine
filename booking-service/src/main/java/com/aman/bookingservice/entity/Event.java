@@ -40,4 +40,9 @@ public class Event {
 
 	@OneToMany(mappedBy = "event" , cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<TicketType> ticketTypes = new ArrayList<>();
+
+	public void addTicketType(TicketType ticketType) {
+		ticketTypes.add(ticketType);
+		ticketType.setEvent(this);
+	}
 }
