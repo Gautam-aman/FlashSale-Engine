@@ -47,6 +47,23 @@ public class TicketType {
 	@JoinColumn(name = "event_id", nullable = false)
 	private Event event;
 
+	public void decreaseInventory(int quantity) {
+		if (quantity <= 0) {
+			throw new IllegalArgumentException("Quantity must be positive");
+		}
+		if (availableQuantity < quantity) {
+			throw new IllegalStateException("Not enough tickets available");
+		}
+		availableQuantity -= quantity;
+	}
+
+	public void increaseInventory(int quantity) {
+		if (quantity <= 0) {
+			throw new IllegalArgumentException("Quantity must be positive");
+		}
+		availableQuantity += quantity;
+	}
+
 	public TicketType(@NotBlank String name, @NotNull @DecimalMin("0.01") BigDecimal price, @NotNull @Min(1) Integer quantity) {
 	}
 }

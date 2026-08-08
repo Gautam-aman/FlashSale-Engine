@@ -16,6 +16,9 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -60,4 +63,6 @@ public class Reservation {
 	@Column(nullable = false)
 	private LocalDateTime expiresAt;
 
+	public Reservation(@NotBlank String s, TicketType ticketType, @NotNull @Min(1) Integer quantity, LocalDateTime expiresAt) {
+	}
 }
