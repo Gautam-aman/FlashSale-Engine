@@ -32,6 +32,7 @@ public class ReservationService {
 	private final IdempotencyRecordRepository idempotencyRecordRepository;
 	private final RequestHashService requestHashService;
 	private final ReservationEventPublisher reservationEventPublisher;
+	private final OutboxService outboxService;
 
 	@Transactional
 	public ReservationResponse createReservation(String idempotencyKey ,CreateReservationRequest request){
@@ -99,7 +100,7 @@ public class ReservationService {
 			Reservation reservation = new Reservation(request.userId(), ticketType, request.quantity(), expiresAt);
 			reservationRepository.save(reservation);
 
-			reservationEventPublisher.publishReservationCreated(reservation);
+			outboxService.createReservationCreatedEvent(reservation);
 
 			IdempotencyRecord record = idempotencyRecordRepository.findByIdempotencyKey(idempotencyKey).orElseThrow(() ->
 									new IllegalStateException("Idempotency record not found"));

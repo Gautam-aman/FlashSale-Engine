@@ -22,7 +22,6 @@ public class OutboxService {
 	public void createReservationCreatedEvent(Reservation reservation){
 
 		try{
-
 			ReservationCreatedEvent event =
 					new ReservationCreatedEvent(
 							UUID.randomUUID(),
