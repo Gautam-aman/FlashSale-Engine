@@ -65,4 +65,25 @@ public class Reservation {
 
 	public Reservation(@NotBlank String s, TicketType ticketType, @NotNull @Min(1) Integer quantity, java.time.LocalDateTime expiresAt) {
 	}
+
+	public void confirm() {
+		if (this.status != ReservationStatus.PENDING) {
+			throw new IllegalStateException(
+					"Only pending reservations can be confirmed"
+			);
+		}
+
+		this.status = ReservationStatus.CONFIRMED;
+	}
+
+	public void cancel() {
+		if (this.status != ReservationStatus.PENDING) {
+			throw new IllegalStateException(
+					"Only pending reservations can be cancelled"
+			);
+		}
+
+		this.status = ReservationStatus.CANCELLED;
+	}
+
 }
