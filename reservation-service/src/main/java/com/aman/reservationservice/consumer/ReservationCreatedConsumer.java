@@ -6,7 +6,9 @@ import com.aman.reservationservice.repository.ProcessedEventRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.kafka.annotation.BackOff;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +16,14 @@ import org.springframework.stereotype.Service;
 public class ReservationCreatedConsumer {
 	private final ProcessedEventRepository processedEventRepository;
 
+	@RetryableTopic(
+			attempts = "4",
+			backOff = @BackOff(
+					delay = 2000,
+					multiplier = 2.0 ,
+					maxDelay = 1000
+			)
+	)
 	@KafkaListener(
 			topics = "reservation.created",
 			groupId = "reservation-service"
