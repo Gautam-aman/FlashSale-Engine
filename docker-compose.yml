@@ -46,8 +46,21 @@ services:
 
     volumes:
       - kafka_data:/var/lib/kafka/data
+  payment-postgres:
+    image: postgres:16
+    container_name: flashsale-payment-postgres
+    environment:
+      POSTGRES_DB: payment_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - payment_postgres_data:/var/lib/postgresql/data
+
 
 volumes:
   postgres_data:
   redis_data:
   kafka_data:
+  payment_postgres_data:
