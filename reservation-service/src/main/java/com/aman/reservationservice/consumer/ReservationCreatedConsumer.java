@@ -5,6 +5,8 @@ import com.aman.reservationservice.event.ReservationCreatedEvent;
 import com.aman.reservationservice.repository.ProcessedEventRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.kafka.annotation.BackOff;
 import org.springframework.kafka.annotation.DltHandler;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ReservationCreatedConsumer {
 	private final ProcessedEventRepository processedEventRepository;
+	private static final Logger log = LoggerFactory.getLogger(ReservationCreatedConsumer.class);
 
 	@RetryableTopic(
 			attempts = "4",
@@ -34,11 +37,17 @@ public class ReservationCreatedConsumer {
 	)
 	@Transactional
 	public void consume(ReservationCreatedEvent event){
-		System.out.println("Received reservation event: " + event.reservationId());
+		//System.out.println("Received reservation event: " + event.reservationId());
+		log.info(
+				"Processing reservation: reservationId={}, eventId={}",
+				event.reservationId(),
+				event.eventId()
+		);
 
 		if (processedEventRepository.existsByEventId(event.eventId())) {
-			System.out.println(
-					"Event already processed: " + event.eventId()
+			log.info(
+					"Event already processed: eventId={}",
+					event.eventId()
 			);
 			return;
 		}
@@ -53,15 +62,22 @@ public class ReservationCreatedConsumer {
 
 		ProcessedEvent processedEvent = new ProcessedEvent(event.eventId());
 		processedEventRepository.save(processedEvent);
-		System.out.println("Successfully processed event: " + event.eventId());
+		log.info(
+				"Successfully processed reservation: reservationId={}, eventId={}",
+				event.reservationId(),
+				event.eventId()
+		);
 
 	}
 
 	@DltHandler
 	public void handleDlt(ReservationCreatedEvent event){
 
-		System.err.println("Reservation event moved to DLT: " + event.eventId());
-		System.err.println("Reservation ID: " + event.reservationId());
+		log.error(
+				"Reservation event moved to DLT: eventId={}, reservationId={}",
+				event.eventId(),
+				event.reservationId()
+		);
 
 	}
 
