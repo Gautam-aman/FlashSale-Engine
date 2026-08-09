@@ -30,4 +30,10 @@ public class ProcessedEvent {
 	@Column(name = "event_id", nullable = false, unique = true)
 	private UUID eventId;
 
+	public ProcessedEvent(UUID uuid) {
+	}
+
+	public ProcessedEvent() {
+
+	}
 }
