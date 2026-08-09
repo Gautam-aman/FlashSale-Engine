@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.kafka.annotation.BackOff;
+import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,9 @@ public class ReservationCreatedConsumer {
 
 	@RetryableTopic(
 			attempts = "4",
+			exclude = {
+					IllegalArgumentException.class
+			},
 			backOff = @BackOff(
 					delay = 2000,
 					multiplier = 2.0 ,
@@ -41,9 +45,23 @@ public class ReservationCreatedConsumer {
 
 		// Business will go here
 
+		if (event.userId().equals("FAIL")) {
+			throw new RuntimeException(
+					"Simulated downstream failure"
+			);
+		}
+
 		ProcessedEvent processedEvent = new ProcessedEvent(event.eventId());
 		processedEventRepository.save(processedEvent);
 		System.out.println("Successfully processed event: " + event.eventId());
+
+	}
+
+	@DltHandler
+	public void handleDlt(ReservationCreatedEvent event){
+
+		System.err.println("Reservation event moved to DLT: " + event.eventId());
+		System.err.println("Reservation ID: " + event.reservationId());
 
 	}
 
