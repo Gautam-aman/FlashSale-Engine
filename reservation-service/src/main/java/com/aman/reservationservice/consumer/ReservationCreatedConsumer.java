@@ -72,7 +72,6 @@ public class ReservationCreatedConsumer {
 
 	@DltHandler
 	public void handleDlt(ReservationCreatedEvent event){
-
 		log.error(
 				"Reservation event moved to DLT: eventId={}, reservationId={}",
 				event.eventId(),
