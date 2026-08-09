@@ -66,4 +66,10 @@ public class Payment {
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
 
+	public Payment(UUID uuid, String s, BigDecimal amount) {
+	}
+
+	public void markSuccess() {
+		status = PaymentStatus.SUCCESS;
+	}
 }

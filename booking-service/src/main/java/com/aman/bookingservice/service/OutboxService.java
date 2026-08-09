@@ -22,6 +22,8 @@ public class OutboxService {
 	public void createReservationCreatedEvent(Reservation reservation){
 
 		try{
+
+			BigDecimal amount = reservation.getTicketType().getPrice().multiply(BigDecimal.valueOf(reservation.getQuantity()));
 			ReservationCreatedEvent event =
 					new ReservationCreatedEvent(
 							UUID.randomUUID(),
@@ -29,6 +31,7 @@ public class OutboxService {
 							reservation.getUserId(),
 							reservation.getTicketType().getId(),
 							reservation.getQuantity(),
+							amount
 							LocalDateTime.now()
 					);
 
