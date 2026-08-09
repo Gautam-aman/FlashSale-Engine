@@ -25,4 +25,6 @@ public class KafkaProducerConfig {
 		return new DefaultKafkaProducerFactory<>(config);
 	}
 
+
+
 }
