@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
+@Deprecated
 public class PaymentEventPublisher {
 	private final KafkaTemplate<String, Object> kafkaTemplate;
 

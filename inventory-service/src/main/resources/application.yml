@@ -1,0 +1,27 @@
+server:
+  port: 8083
+
+spring:
+  application:
+    name: inventory-service
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+  kafka:
+    bootstrap-servers: localhost:9092
+
+    consumer:
+      group-id: inventory-service
+      auto-offset-reset: earliest
+
+      key-deserializer:
+        org.apache.kafka.common.serialization.StringDeserializer
+
+      value-deserializer:
+        org.apache.kafka.common.serialization.JsonDeserializer
+
+      properties:
+        spring.json.trusted.packages: com.aman.inventoryservice
