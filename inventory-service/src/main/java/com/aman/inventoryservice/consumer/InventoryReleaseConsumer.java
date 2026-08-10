@@ -10,8 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.stereotype.Service;
+import org.springframework.retry.annotation.Backoff;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +24,14 @@ public class InventoryReleaseConsumer {
 
 	private final ProcessedEventRepository processedEventRepository;
 
+	@RetryableTopic(
+			attempts = "4",
+			backoff = @Backoff(
+					delay = 2000,
+					multiplier = 2.0,
+					maxDelay = 10000
+			)
+	)
 	@KafkaListener(
 			topics = "inventory.release.requested",
 			groupId = "inventory-service"
@@ -54,4 +65,15 @@ public class InventoryReleaseConsumer {
 			);
 		}
 	}
+
+	@DltHandler
+	public void handleDlt(InventoryReleaseRequestedEvent event) {
+		log.error(
+				"Inventory release moved to DLT: " +
+						"eventId={}, reservationId={}",
+				event.eventId(),
+				event.reservationId()
+		);
+	}
+
 }
