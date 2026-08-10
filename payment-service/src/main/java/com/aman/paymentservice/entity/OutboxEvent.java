@@ -46,4 +46,6 @@ public class OutboxEvent {
 	@Column(nullable = false)
 	private LocalDateTime createdAt;
 
+	public OutboxEvent(UUID eventId, String eventType, String aggregateId, String payload) {
+	}
 }
