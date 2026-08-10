@@ -33,20 +33,25 @@ public class InventoryReleaseConsumer {
 				event.eventId(),
 				event.reservationId()
 		);
-		if (processedEventRepository.existsByEventId(event.eventId())) {
+		boolean released = redisInventoryService.releaseInventory(
+						event.ticketTypeId(),
+						event.quantity(),
+						event.eventId().toString()
+				);
+
+		if (released) {
 			log.info(
-					"Event already processed: eventId={}",
+					"Inventory released successfully: " +
+							"ticketTypeId={}, quantity={}, eventId={}",
+					event.ticketTypeId(),
+					event.quantity(),
 					event.eventId()
 			);
-			return;
+
+		} else {
+			log.info(
+					"Duplicate inventory release ignored: " + "eventId={}", event.eventId()
+			);
 		}
-		redisInventoryService.releaseInventory(event.ticketTypeId(), event.quantity() , String.valueOf(event.eventId()));
-		processedEventRepository.save(new ProcessedEvent(event.eventId()));
-		log.info(
-				"Inventory released successfully: " +
-						"ticketTypeId={}, quantity={}",
-				event.ticketTypeId(),
-				event.quantity()
-		);
 	}
 }
