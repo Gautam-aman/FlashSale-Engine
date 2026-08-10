@@ -4,6 +4,7 @@ import com.aman.bookingservice.entity.Reservation;
 import com.aman.bookingservice.entity.ReservationStatus;
 import com.aman.bookingservice.event.PaymentFailedEvent;
 import com.aman.bookingservice.repository.ReservationRepository;
+import com.aman.bookingservice.service.InventoryOutboxService;
 import com.aman.bookingservice.service.RedisInventoryService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ public class PaymentFailedConsumer {
 
 	private final ReservationRepository reservationRepository;
 	private final RedisInventoryService redisInventoryService;
+	private final InventoryOutboxService inventoryOutboxService;
 
 	@KafkaListener(
 			topics = "payment.failed",
@@ -48,10 +50,7 @@ public class PaymentFailedConsumer {
 
 		reservation.cancel();
 		reservationRepository.save(reservation);
-		redisInventoryService.releaseInventory(
-				reservation.getTicketType().getId(),
-				reservation.getQuantity()
-		);
+		inventoryOutboxService.createInventoryReleaseEvent(reservation);
 		log.info(
 				"Reservation cancelled and inventory released: " +
 						"reservationId={}, quantity={}",

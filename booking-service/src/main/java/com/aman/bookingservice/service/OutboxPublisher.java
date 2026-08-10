@@ -22,7 +22,9 @@ public class OutboxPublisher {
 		List<OutboxEvent> events = outboxEventRepository.findTop100ByProcessedFalseOrderByIdAsc();
 
 		for(OutboxEvent event : events){
-			kafkaTemplate.send("reservation.created",
+			String topic = getTopic(event.getEventType());
+
+			kafkaTemplate.send(topic,
 					event.getAggregateId(),
 					event.getPayload())
 					.whenComplete((res, ex) -> {
@@ -33,6 +35,20 @@ public class OutboxPublisher {
 					});
 		}
 
+	}
+
+	private String getTopic(String eventType) {
+		return switch (eventType) {
+			case "RESERVATION_CREATED" ->
+					"reservation.created";
+			case "INVENTORY_RELEASE_REQUESTED" ->
+					"inventory.release.requested";
+			default ->
+					throw new IllegalArgumentException(
+							"Unknown event type: "
+									+ eventType
+					);
+		};
 	}
 
 }
