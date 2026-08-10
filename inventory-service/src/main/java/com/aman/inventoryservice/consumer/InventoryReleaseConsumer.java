@@ -13,29 +13,37 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class InventoryReleaseConsumer {
-
 	private static final Logger log = LoggerFactory.getLogger(InventoryReleaseConsumer.class);
 	private final RedisInventoryService redisInventoryService;
 
+	private final ProcessedEventRepository processedEventRepository;
 
 	@KafkaListener(
 			topics = "inventory.release.requested",
 			groupId = "inventory-service"
 	)
+	@Transactional
 	public void consume(InventoryReleaseRequestedEvent event) {
 		log.info(
 				"Received inventory release request: " +
-						"reservationId={}, quantity={}",
-				event.reservationId(),
-				event.quantity()
+						"eventId={}, reservationId={}",
+				event.eventId(),
+				event.reservationId()
 		);
-
+		if (processedEventRepository.existsByEventId(event.eventId())) {
+			log.info(
+					"Event already processed: eventId={}",
+					event.eventId()
+			);
+			return;
+		}
 		redisInventoryService.releaseInventory(event.ticketTypeId(), event.quantity());
+		processedEventRepository.save(new ProcessedEvent(event.eventId()));
 		log.info(
-				"Inventory released: ticketTypeId={}, quantity={}",
+				"Inventory released successfully: " +
+						"ticketTypeId={}, quantity={}",
 				event.ticketTypeId(),
 				event.quantity()
 		);
 	}
-
 }

@@ -58,9 +58,22 @@ services:
     volumes:
       - payment_postgres_data:/var/lib/postgresql/data
 
+  inventory-postgres:
+    image: postgres:16
+    container_name: flashsale-inventory-postgres
+    environment:
+      POSTGRES_DB: inventory_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - inventory_postgres_data:/var/lib/postgresql/data
+
 
 volumes:
   postgres_data:
   redis_data:
   kafka_data:
   payment_postgres_data:
+  inventory_postgres_data:
