@@ -10,11 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.kafka.annotation.BackOff;
 import org.springframework.kafka.annotation.DltHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.annotation.RetryableTopic;
 import org.springframework.stereotype.Service;
-import org.springframework.retry.annotation.Backoff;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +26,7 @@ public class InventoryReleaseConsumer {
 
 	@RetryableTopic(
 			attempts = "4",
-			backoff = @Backoff(
+			backOff = @BackOff(
 					delay = 2000,
 					multiplier = 2.0,
 					maxDelay = 10000
