@@ -11,6 +11,8 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import lombok.Getter;
+import org.jspecify.annotations.Nullable;
 
 @Entity
 @Table(
@@ -31,10 +33,10 @@ public class OutboxEvent {
 	@Column(nullable = false, unique = true)
 	private UUID eventId;
 
-	@Column(nullable = false)
+	@Getter @Column(nullable = false)
 	private String eventType;
 
-	@Column(nullable = false)
+	@Getter @Column(nullable = false)
 	private String aggregateId;
 
 	@Column(nullable = false, columnDefinition = "TEXT")
@@ -47,5 +49,21 @@ public class OutboxEvent {
 	private LocalDateTime createdAt;
 
 	public OutboxEvent(UUID eventId, String eventType, String aggregateId, String payload) {
+	}
+
+	public OutboxEvent() {
+
+	}
+
+	public @Nullable String getPayload() {
+		return payload;
+	}
+
+	public void markProcessed() {
+		processed = true;
+	}
+
+	public Object getEventId() {
+		return eventId;
 	}
 }

@@ -5,6 +5,7 @@ import com.aman.paymentservice.entity.PaymentStatus;
 import com.aman.paymentservice.event.ReservationCreatedEvent;
 import com.aman.paymentservice.repository.PaymentRepository;
 import com.aman.paymentservice.service.PaymentEventPublisher;
+import com.aman.paymentservice.service.PaymentOutboxService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -19,6 +20,7 @@ public class ReservationCreatedConsumer {
 
 	private final PaymentRepository paymentRepository;
 	private final PaymentEventPublisher paymentEventPublisher;
+	private final PaymentOutboxService paymentOutboxService;
 
 	private static final Logger log = LoggerFactory.getLogger(ReservationCreatedConsumer.class);
 
@@ -48,9 +50,9 @@ public class ReservationCreatedConsumer {
 		paymentRepository.save(payment);
 
 		if (payment.getStatus() == PaymentStatus.SUCCESS) {
-			paymentEventPublisher.publishSuccess(payment);
+			paymentOutboxService.createPaymentSucceededEvent(payment);
 		} else {
-			paymentEventPublisher.publishFailure(payment);
+			paymentOutboxService.createPaymentFailedEvent(payment);
 		}
 
 	}
