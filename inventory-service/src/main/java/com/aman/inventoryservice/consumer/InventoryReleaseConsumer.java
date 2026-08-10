@@ -1,8 +1,11 @@
 package com.aman.inventoryservice.consumer;
 
 
+import com.aman.inventoryservice.entity.ProcessedEvent;
 import com.aman.inventoryservice.event.InventoryReleaseRequestedEvent;
+import com.aman.inventoryservice.repository.ProcessedEventRepository;
 import com.aman.inventoryservice.service.RedisInventoryService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +40,7 @@ public class InventoryReleaseConsumer {
 			);
 			return;
 		}
-		redisInventoryService.releaseInventory(event.ticketTypeId(), event.quantity());
+		redisInventoryService.releaseInventory(event.ticketTypeId(), event.quantity() , String.valueOf(event.eventId()));
 		processedEventRepository.save(new ProcessedEvent(event.eventId()));
 		log.info(
 				"Inventory released successfully: " +
