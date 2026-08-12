@@ -1,4 +1,13 @@
 package com.aman.bookingservice.event;
 
-public class InventoryReserveRequestedEvent {
+import java.time.LocalDateTime;
+import java.util.*;
+
+public record InventoryReserveRequestedEvent(
+		UUID eventId,
+		UUID reservationId,
+		Long ticketTypeId,
+		Integer quantity,
+		LocalDateTime createdAt
+) {
 }
