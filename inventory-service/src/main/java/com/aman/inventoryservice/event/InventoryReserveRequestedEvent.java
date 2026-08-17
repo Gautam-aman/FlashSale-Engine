@@ -8,6 +8,8 @@ public record InventoryReserveRequestedEvent(
 		UUID reservationId,
 		Long ticketTypeId,
 		Integer quantity,
-		LocalDateTime createdAt
+		LocalDateTime createdAt,
+		String userId,
+		Object amount
 ) {
 }
