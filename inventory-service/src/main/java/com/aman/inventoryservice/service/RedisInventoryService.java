@@ -1,5 +1,6 @@
 package com.aman.inventoryservice.service;
 
+import com.aman.inventoryservice.config.RedisStreamConfig;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.core.io.ClassPathResource;
@@ -16,6 +17,7 @@ import java.util.List;
 public class RedisInventoryService {
 	private final StringRedisTemplate redisTemplate;
 	private final DefaultRedisScript<Long> releaseInventoryScript;
+	private final DefaultRedisScript<Long> reserveInventoryScript;
 
 	public boolean releaseInventory(Long ticketTypeId, int quantity, String eventId) {
 
@@ -31,4 +33,23 @@ public class RedisInventoryService {
 				);
 		return result != null && result == 1;
 	}
+
+	public boolean reserveInventory(Long ticketTypeId, int quantity, String eventId, String reservationId, String userId, String amount) {
+		String inventoryKey = "inventory:" + ticketTypeId;
+
+		Long result = redisTemplate.execute(reserveInventoryScript,
+						List.of(
+								inventoryKey,
+								RedisStreamConfig.INVENTORY_EVENTS
+						),
+						String.valueOf(quantity),
+						eventId,
+						reservationId,
+						userId,
+						String.valueOf(ticketTypeId),
+						amount
+				);
+		return result != null && result == 1;
+	}
+
 }
