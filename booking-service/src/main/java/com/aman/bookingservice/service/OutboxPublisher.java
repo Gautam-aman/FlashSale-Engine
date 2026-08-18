@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class OutboxPublisher {
 
 	private final OutboxEventRepository outboxEventRepository;
-	private final KafkaTemplate<String, String> kafkaTemplate;
+	private final KafkaTemplate<String, Object> kafkaTemplate;
 
 	@Scheduled(fixedDelay = 1000)
 	public void publishEvents(){

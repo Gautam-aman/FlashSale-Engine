@@ -67,6 +67,12 @@ public class Payment {
 	private LocalDateTime createdAt;
 
 	public Payment(UUID uuid, String s, BigDecimal amount) {
+		this.paymentId = UUID.randomUUID();
+		this.reservationId = uuid;
+		this.userId = s;
+		this.amount = amount;
+		this.status = PaymentStatus.PENDING;
+		this.createdAt = LocalDateTime.now();
 	}
 
 	public void markSuccess() {

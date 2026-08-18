@@ -13,4 +13,19 @@ public class KafkaTopicConfig {
 		return new NewTopic("reservation.created", 3, (short) 1);
 	}
 
+	@Bean
+	public NewTopic inventoryReleaseRequestedTopic() {
+		return new NewTopic("inventory.release.requested", 3, (short) 1);
+	}
+
+	@Bean
+	public NewTopic paymentSucceededTopic() {
+		return new NewTopic("payment.succeeded", 3, (short) 1);
+	}
+
+	@Bean
+	public NewTopic paymentFailedTopic() {
+		return new NewTopic("payment.failed", 3, (short) 1);
+	}
+
 }

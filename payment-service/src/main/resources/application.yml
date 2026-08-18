@@ -30,4 +30,4 @@ spring:
         spring.json.value.default.type: com.aman.paymentservice.event.ReservationCreatedEvent
 
 server:
-  port: 8080
+  port: 8082

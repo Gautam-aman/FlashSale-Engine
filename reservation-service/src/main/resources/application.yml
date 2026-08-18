@@ -22,4 +22,4 @@ spring:
         spring.json.value.default.type: com.aman.reservationservice.event.ReservationCreatedEvent
 
 server:
-  port: 8080
+  port: 8081

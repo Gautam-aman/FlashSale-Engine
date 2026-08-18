@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 public class RedisInventoryService {
 	private static final String INVENTORY_KEY_PREFIX = "ticket:inventory:";
 
-	private final StringRedisTemplate redisTemplate = new StringRedisTemplate();
+	private final StringRedisTemplate redisTemplate;
 	private final DefaultRedisScript<Long> reserveInventoryScript;
 
 	public void initializeInventory(Long ticketTypeId, int quantity){

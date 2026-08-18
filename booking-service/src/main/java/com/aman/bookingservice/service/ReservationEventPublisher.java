@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.aman.bookingservice.entity.Reservation;
-import com.aman.bookingservice.event.ReservationCreatedEvent;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.kafka.core.KafkaTemplate;
@@ -15,17 +14,19 @@ import org.springframework.stereotype.Service;
 public class ReservationEventPublisher {
 
 	private static final String TOPIC = "reservation.created";
-	private final KafkaTemplate<String, ReservationCreatedEvent> kafkaTemplate;
+	private final KafkaTemplate<String, Object> kafkaTemplate;
 
 	public void publishReservationCreated(Reservation reservation) {
 
-		ReservationCreatedEvent event = new ReservationCreatedEvent(
+		com.aman.bookingservice.event.ReservationCreatedEvent event = new com.aman.bookingservice.event.ReservationCreatedEvent(
 						UUID.randomUUID(),
 						reservation.getReservationId(),
 						reservation.getUserId(),
 						reservation.getTicketType().getId(),
 						reservation.getQuantity(),
-						LocalDateTime.now()
+						LocalDateTime.now(),
+						reservation.getTicketType().getPrice()
+								.multiply(java.math.BigDecimal.valueOf(reservation.getQuantity()))
 				);
 
 		kafkaTemplate.send(TOPIC, reservation.getReservationId().toString(), event);

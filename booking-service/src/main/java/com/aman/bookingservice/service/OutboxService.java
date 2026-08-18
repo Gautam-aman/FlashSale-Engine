@@ -1,6 +1,7 @@
 package com.aman.bookingservice.service;
 
 import java.time.LocalDateTime;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 import com.aman.bookingservice.entity.OutboxEvent;
@@ -29,11 +30,11 @@ public class OutboxService {
 							UUID.randomUUID(),
 							reservation.getReservationId(),
 							reservation.getUserId(),
-							reservation.getTicketType().getId(),
-							reservation.getQuantity(),
-							amount
-							LocalDateTime.now()
-					);
+								reservation.getTicketType().getId(),
+								reservation.getQuantity(),
+								LocalDateTime.now(),
+								amount
+						);
 
 			String payload = objectMapper.writeValueAsString(event);
 			OutboxEvent outboxEvent = new OutboxEvent(

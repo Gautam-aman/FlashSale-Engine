@@ -70,5 +70,9 @@ public class TicketType {
 	}
 
 	public TicketType(@NotBlank String name, @NotNull @DecimalMin("0.01") BigDecimal price, @NotNull @Min(1) Integer quantity) {
+		this.name = name;
+		this.price = price;
+		this.totalQuantity = quantity;
+		this.availableQuantity = quantity;
 	}
 }

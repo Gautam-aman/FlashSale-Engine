@@ -18,4 +18,19 @@ public class KafkaTopicConfig {
 		);
 	}
 
+	@Bean
+	public NewTopic inventoryReserveTopic() {
+		return new NewTopic("inventory.reserve.requested", 3, (short) 1);
+	}
+
+	@Bean
+	public NewTopic inventoryReservedTopic() {
+		return new NewTopic("inventory.reserved", 3, (short) 1);
+	}
+
+	@Bean
+	public NewTopic inventoryUnavailableTopic() {
+		return new NewTopic("inventory.unavailable", 3, (short) 1);
+	}
+
 }

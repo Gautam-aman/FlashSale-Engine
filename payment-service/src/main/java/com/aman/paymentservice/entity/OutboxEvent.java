@@ -49,6 +49,11 @@ public class OutboxEvent {
 	private LocalDateTime createdAt;
 
 	public OutboxEvent(UUID eventId, String eventType, String aggregateId, String payload) {
+		this.eventId = eventId;
+		this.eventType = eventType;
+		this.aggregateId = aggregateId;
+		this.payload = payload;
+		this.createdAt = LocalDateTime.now();
 	}
 
 	public OutboxEvent() {
@@ -63,7 +68,7 @@ public class OutboxEvent {
 		processed = true;
 	}
 
-	public Object getEventId() {
+	public UUID getEventId() {
 		return eventId;
 	}
 }

@@ -49,6 +49,10 @@ public class IdempotencyRecord {
 	private LocalDateTime createdAt;
 
 	public IdempotencyRecord(String idempotencyKey, String requestHash) {
+		this.idempotencyKey = idempotencyKey;
+		this.requestHash = requestHash;
+		this.status = IdempotencyStatus.PROCESSING;
+		this.createdAt = LocalDateTime.now();
 	}
 
 	public void markCompleted(String reservationId) {

@@ -19,6 +19,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.UuidGenerator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -37,7 +38,7 @@ import lombok.NoArgsConstructor;
 public class Reservation {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@UuidGenerator
 	private UUID id;
 
 	@Column(nullable = false, unique = true)
@@ -64,6 +65,13 @@ public class Reservation {
 	private LocalDateTime expiresAt;
 
 	public Reservation(@NotBlank String s, TicketType ticketType, @NotNull @Min(1) Integer quantity, java.time.LocalDateTime expiresAt) {
+		this.reservationId = UUID.randomUUID();
+		this.userId = s;
+		this.ticketType = ticketType;
+		this.quantity = quantity;
+		this.status = ReservationStatus.PENDING;
+		this.createdAt = LocalDateTime.now();
+		this.expiresAt = expiresAt;
 	}
 
 	public void confirm() {

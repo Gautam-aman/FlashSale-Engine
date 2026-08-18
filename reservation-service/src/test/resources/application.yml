@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:reservation;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  kafka:
+    listener:
+      auto-startup: false
+    admin:
+      auto-create: false
+  task:
+    scheduling:
+      enabled: false

@@ -16,8 +16,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import org.springframework.web.bind.annotation.GetMapping;
-
 @Entity
 @Table(name = "outbox_events",
 indexes = {
@@ -55,5 +53,10 @@ public class OutboxEvent {
 	private LocalDateTime createdAt;
 
 	public OutboxEvent(UUID uuid, String reservationCreated, String string, String payload) {
+		this.eventId = uuid;
+		this.eventType = reservationCreated;
+		this.aggregateId = string;
+		this.payload = payload;
+		this.createdAt = LocalDateTime.now();
 	}
 }

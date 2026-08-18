@@ -17,15 +17,6 @@ spring:
       host: localhost
       port: 6379
 
-server:
-  port: 8080
-
-management:
-  endpoint:
-    web:
-      exposure:
-        include: health,info,metrics,prometheus
-
   kafka:
     bootstrap-servers: localhost:9092
 
@@ -40,3 +31,12 @@ management:
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: com.aman.bookingservice
+
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus

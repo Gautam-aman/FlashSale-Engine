@@ -31,6 +31,7 @@ public class ProcessedEvent {
 	private UUID eventId;
 
 	public ProcessedEvent(UUID uuid) {
+		this.eventId = uuid;
 	}
 
 	public ProcessedEvent() {
